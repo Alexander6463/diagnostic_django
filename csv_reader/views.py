@@ -1,27 +1,29 @@
-from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+import datetime
+
+from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 
 from .forms import UploadFileForm
-from csv import reader
-import tempfile
+from .utils import (check_questions, configure_logging, create_answers,
+                    create_user, get_info)
 
 # Create your views here.
 
+logger = configure_logging(__file__)
+
 
 def upload_file(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            tmp_file = tempfile.mktemp("upload.csv")
-            with open(tmp_file, "w") as f:
-                f.write(form.files['file'].read().decode("utf-8"))
-            with open(tmp_file, "r") as f:
-                for element in reader(f, delimiter=','):
-                    print(element)
-
-
-
-            #handle_uploaded_file(request.FILES['file'])
+            questions, users_and_answers = get_info(form)
+            q_db = check_questions(questions=questions)
+            for info in users_and_answers:
+                try:
+                    user = create_user(info=info["user"])
+                    create_answers(answers=info["answers"], questions=q_db, user=user)
+                except BaseException as err:
+                    logger.exception(err)
             return HttpResponse("Successfully uploaded")
     else:
         form = UploadFileForm()
-    return render(request, 'index.html', {'form': form})
+    return render(request, "index.html", {"form": form})

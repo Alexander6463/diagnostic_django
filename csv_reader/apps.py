@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class CsvReaderConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'csv_reader'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "csv_reader"
