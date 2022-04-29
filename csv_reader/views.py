@@ -1,10 +1,10 @@
 import datetime
 
-from django.shortcuts import HttpResponse, HttpResponseRedirect, render
+from django.shortcuts import HttpResponse, render
 
 from .forms import UploadFileForm
-from .utils import (check_questions, configure_logging, create_answers,
-                    create_user, get_info)
+from .utils.crud import check_questions, create_answers, create_user, get_info
+from .utils.configure_logging import configure_logging
 
 # Create your views here.
 

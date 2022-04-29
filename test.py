@@ -1,11 +1,7 @@
-import csv
+import decimal
 
-# from csv_reader.models import User
+ex = "0b001"
 
-with open("1.csv", "r") as f:
-    csv = csv.reader(f, delimiter=",")
-    headers = next(csv)
-    # user = User(*headers)
-    answers = next(csv)
-    for header, answer in zip(headers[:20], answers[:20]):
-        print(header, answer)
+ex = 25
+
+print(bin(ex)[2:])

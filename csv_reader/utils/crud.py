@@ -1,25 +1,13 @@
-import logging
-import sys
 import tempfile
 from csv import reader
 from typing import List
 
 from django.db.models import QuerySet
 
-from .forms import UploadFileForm
-from .models import Answers, Question, User
-
-
-def configure_logging(name: str) -> logging.Logger:
-    logging_format = "[%(asctime)s] - [%(name)s] - [%(levelname)s] - [%(message)s]"
-    formatter = logging.Formatter(logging_format)
-    console_handler = logging.StreamHandler(stream=sys.stdout)
-    console_handler.setFormatter(formatter)
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
-    logger.addHandler(console_handler)
-    return logger
-
+from .configure_logging import configure_logging
+from .coding import choices_db
+from csv_reader.forms import UploadFileForm
+from csv_reader.models import Answers, Question, User
 
 logger = configure_logging(__file__)
 
@@ -54,21 +42,21 @@ def create_user(info: List[str]) -> User:
         time_changed=info[2],
         name=info[3],
         group=info[4],
-        member_gz_2021_2022=info[5],
-        sex=info[6],
-        age=info[7],
-        marital_status=info[8],
-        living=info[9],
-        children=info[10],
-        work_status=info[11],
-        working_in_fishing_or_shipping=info[12],
-        working_maritime=info[13],
-        working_fishing_industry=info[14],
-        working_fishing_technology=info[15],
-        working_aquaculture=info[16],
-        working_economic=info[17],
-        working_it=info[18],
-        working_other=info[19],
+        member_gz_2021_2022=choices_db.get("yes_no_choices").get(info[5]),
+        sex=choices_db.get("sex_choices").get(info[6]),
+        age=bin(int(info[7]))[2:],
+        marital_status=choices_db.get("martial_status_choices").get(info[8]),
+        living=choices_db.get("living_choices").get(info[9]),
+        children=choices_db.get("children_choices").get(info[10]),
+        work_status=choices_db.get("work_status_choices").get(info[11]),
+        working_in_fishing_or_shipping=choices_db.get("yes_no_choices").get(info[12]),
+        working_maritime=choices_db.get("yes_no_choices").get(info[13]),
+        working_fishing_industry=choices_db.get("yes_no_choices").get(info[14]),
+        working_fishing_technology=choices_db.get("yes_no_choices").get(info[15]),
+        working_aquaculture=choices_db.get("yes_no_choices").get(info[16]),
+        working_economic=choices_db.get("yes_no_choices").get(info[17]),
+        working_it=choices_db.get("yes_no_choices").get(info[18]),
+        working_other=choices_db.get("yes_no_choices").get(info[19]),
     )
     user.save()
     logger.info("User %s successfully saved", info[3])
@@ -79,6 +67,11 @@ def create_answers(
     user: User, questions: QuerySet[Question], answers: List[str]
 ) -> None:
     for answer, question in zip(answers, questions):
-        ans = Answers(user=user, question=question, answer=answer)
+        ans = Answers(
+            user=user,
+            question=question,
+            answer=answer,
+            answer_bin=choices_db.get("answer_choices").get(answer),
+        )
         ans.save()
     logger.info("Answers for user %s successfully saved", user.name)
