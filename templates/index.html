@@ -1,16 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>csv reader</title>
-</head>
-<body>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <label for="id_file">File:</label>
-    <input type="file" name="file" required id="id_file">
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <form method="post" enctype="multipart/form-data" class="mb-3">
+        {% csrf_token %}
+        <label for="id_file">File:</label>
+        <input class="form-control" type="file" name="file" required id="id_file">
+        <br>
+        <input type="submit" class="btn btn-primary" value="Upload">
+    </form>
     <br>
-    <input type="submit" value="Upload">
-</form>
-</body>
-</html>
+
+    <form action="{% url 'csv_reader:answers' %}" method="get" class="row row-cols-lg-auto g-3 align-items-center">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="field" class="visually-hidden">Preference</label>
+            <select id="field" name="field" class="form-select" id="inlineFormSelectPref">
+                <option selected>Choose...</option>
+                <option value="user_id">ID</option>
+                <option value="name">Фамилия, Имя, Отчество</option>
+                <option value="sex">Пол</option>
+                <option value="age">Возраст</option>
+                <option value="marital_status">Семейное положение</option>
+                <option value="children">Детность</option>
+                <option value="work_status">Занятость</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="value"></label>
+            <input type="text" id="value" name="value" placeholder="Enter value">
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

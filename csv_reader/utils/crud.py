@@ -1,12 +1,12 @@
 import tempfile
 from csv import reader
-from typing import List
+from typing import List, Dict
 
 from django.db.models import QuerySet
 
 from .configure_logging import configure_logging
 from .coding import choices_db
-from csv_reader.forms import UploadFileForm
+from csv_reader.forms import UploadFileForm, GetAnswersForm
 from csv_reader.models import Answers, Question, User
 
 logger = configure_logging(__file__)
@@ -42,21 +42,21 @@ def create_user(info: List[str]) -> User:
         time_changed=info[2],
         name=info[3],
         group=info[4],
-        member_gz_2021_2022=choices_db.get("yes_no_choices").get(info[5]),
-        sex=choices_db.get("sex_choices").get(info[6]),
+        member_gz_2021_2022=choices_db.get("yes_no").get(info[5]),
+        sex=choices_db.get("sex").get(info[6]),
         age=bin(int(info[7]))[2:],
-        marital_status=choices_db.get("martial_status_choices").get(info[8]),
-        living=choices_db.get("living_choices").get(info[9]),
-        children=choices_db.get("children_choices").get(info[10]),
-        work_status=choices_db.get("work_status_choices").get(info[11]),
-        working_in_fishing_or_shipping=choices_db.get("yes_no_choices").get(info[12]),
-        working_maritime=choices_db.get("yes_no_choices").get(info[13]),
-        working_fishing_industry=choices_db.get("yes_no_choices").get(info[14]),
-        working_fishing_technology=choices_db.get("yes_no_choices").get(info[15]),
-        working_aquaculture=choices_db.get("yes_no_choices").get(info[16]),
-        working_economic=choices_db.get("yes_no_choices").get(info[17]),
-        working_it=choices_db.get("yes_no_choices").get(info[18]),
-        working_other=choices_db.get("yes_no_choices").get(info[19]),
+        marital_status=choices_db.get("marital_status").get(info[8]),
+        living=choices_db.get("living").get(info[9]),
+        children=choices_db.get("children").get(info[10]),
+        work_status=choices_db.get("work_status").get(info[11]),
+        working_in_fishing_or_shipping=choices_db.get("yes_no").get(info[12]),
+        working_maritime=choices_db.get("yes_no").get(info[13]),
+        working_fishing_industry=choices_db.get("yes_no").get(info[14]),
+        working_fishing_technology=choices_db.get("yes_no").get(info[15]),
+        working_aquaculture=choices_db.get("yes_no").get(info[16]),
+        working_economic=choices_db.get("yes_no").get(info[17]),
+        working_it=choices_db.get("yes_no").get(info[18]),
+        working_other=choices_db.get("yes_no").get(info[19]),
     )
     user.save()
     logger.info("User %s successfully saved", info[3])
@@ -71,7 +71,26 @@ def create_answers(
             user=user,
             question=question,
             answer=answer,
-            answer_bin=choices_db.get("answer_choices").get(answer),
+            answer_bin=choices_db.get("answer").get(answer),
         )
         ans.save()
     logger.info("Answers for user %s successfully saved", user.name)
+
+
+def select_info(data: Dict[str, str]) -> Dict[str, str]:
+    value = data.get("value")
+    field = data.get("field")
+    if field in ("sex", "marital_status", "children", "work_status"):
+        users = User.objects.filter(**{field: choices_db.get(field).get(value)})
+    elif field == "age":
+        users = User.objects.filter(**{field: bin(int(value))[2:]})
+    else:
+        users = User.objects.filter(**{field: value})
+    res: Dict[str, str] = {}
+    for index, user in enumerate(users):
+        answers = Answers.objects.filter(user=user.id)
+        res[index] = (
+            user.name,
+            "".join(answer.answer_bin for answer in answers if answer.answer_bin),
+        )
+    return res
