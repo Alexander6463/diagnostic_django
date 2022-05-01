@@ -1,5 +1,5 @@
-import sys
 import logging
+import sys
 
 
 def configure_logging(name: str) -> logging.Logger:

@@ -1,14 +1,13 @@
 from django.db import models
-from django.db.models import Choices
 
 from .utils.coding import (
-    yes_no_choices,
-    martial_status_choices,
-    work_status_choices,
     answer_choices,
-    living_choices,
     children_choices,
+    living_choices,
+    martial_status_choices,
     sex_choices,
+    work_status_choices,
+    yes_no_choices,
 )
 
 # Create your models here.
