@@ -19,6 +19,8 @@ logger = configure_logging(__file__)
 def upload_file(request):
     if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
+        if not request.FILES['file'].name.endswith("csv"):
+            return render(request, "index.html", {"msg": "Invalid extension of file"})
         if form.is_valid():
             questions, users_and_answers = get_info(form)
             q_db = check_questions(questions=questions)
@@ -28,7 +30,7 @@ def upload_file(request):
                     create_answers(answers=info["answers"], questions=q_db, user=user)
                 except BaseException as err:
                     logger.exception(err)
-            return HttpResponse("Successfully uploaded")
+            return render(request, "index.html", {"msg": "Successfully uploaded"})
     return render(request, "index.html")
 
 
@@ -39,11 +41,11 @@ def answers_and_users(request):
             try:
                 users = select_info(form.cleaned_data)
             except Exception as err:
-                return HttpResponse(f"Invalid input data {err}")
+                return render(request, "users.html", {"msg": f"Invalid input data {err}"})
             if users:
                 request.session["users"] = users
             else:
-                return HttpResponse("Users are not found")
+                return render(request, "users.html", {"msg": "Users are not found"})
         paginator = Paginator(list(request.session.get("users").items()), 10)
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
