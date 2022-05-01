@@ -1,7 +1,8 @@
-from django.shortcuts import HttpResponse, render
 from django.core.paginator import Paginator
+from django.shortcuts import render
 
-from .forms import UploadFileForm, GetAnswersForm
+from .forms import GetAnswersForm, UploadFileForm
+from .utils.configure_logging import configure_logging
 from .utils.crud import (
     check_questions,
     create_answers,
@@ -9,7 +10,6 @@ from .utils.crud import (
     get_info,
     select_info,
 )
-from .utils.configure_logging import configure_logging
 
 # Create your views here.
 
@@ -19,7 +19,7 @@ logger = configure_logging(__file__)
 def upload_file(request):
     if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
-        if not request.FILES['file'].name.endswith("csv"):
+        if not request.FILES["file"].name.endswith("csv"):
             return render(request, "index.html", {"msg": "Invalid extension of file"})
         if form.is_valid():
             questions, users_and_answers = get_info(form)
@@ -41,7 +41,9 @@ def answers_and_users(request):
             try:
                 users = select_info(form.cleaned_data)
             except Exception as err:
-                return render(request, "users.html", {"msg": f"Invalid input data {err}"})
+                return render(
+                    request, "users.html", {"msg": f"Invalid input data {err}"}
+                )
             if users:
                 request.session["users"] = users
             else:

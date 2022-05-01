@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container-fluid">
     <br>
- <form action="{% url 'csv_reader:answers' %}" method="get" class="row row-cols-lg-auto g-3 align-items-center">
+    <form action="{% url 'csv_reader:answers' %}" method="get" class="row row-cols-lg-auto g-3 align-items-center">
         {% csrf_token %}
 
         <div class="mb-3">
@@ -29,11 +29,11 @@
         </div>
     </form>
 
-{% if msg %}
-{{ msg }}
-{% endif %}
+    {% if msg %}
+    {{ msg }}
+    {% endif %}
 
-{% if page_obj.object_list %}
+    {% if page_obj.object_list %}
     <table class="table">
         <thead>
         <tr>

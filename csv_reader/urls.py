@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import upload_file, answers_and_users
+from .views import answers_and_users, upload_file
 
 app_name = "csv_reader"
 

@@ -1,20 +1,20 @@
 from django.contrib import admin
 
-from .models import Question, User, Answers
+from .models import Answers, Question, User
 
 # Register your models here.
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'user_id', 'name', 'sex')
-    search_fields = ('name',)
-    list_filter = ('time_create',)
-    empty_value_display = '-пусто-'
+    list_display = ("pk", "user_id", "name", "sex")
+    search_fields = ("name",)
+    list_filter = ("time_create",)
+    empty_value_display = "-пусто-"
 
 
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'text_question')
-    search_fields = ('text_question',)
+    list_display = ("pk", "text_question")
+    search_fields = ("text_question",)
 
 
 class AnswersAdmin(admin.ModelAdmin):

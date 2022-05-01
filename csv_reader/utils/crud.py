@@ -1,13 +1,14 @@
 import tempfile
 from csv import reader
-from typing import List, Dict
+from typing import Dict, List
 
 from django.db.models import QuerySet
 
-from .configure_logging import configure_logging
-from .coding import choices_db
-from csv_reader.forms import UploadFileForm, GetAnswersForm
+from csv_reader.forms import GetAnswersForm, UploadFileForm
 from csv_reader.models import Answers, Question, User
+
+from .coding import choices_db
+from .configure_logging import configure_logging
 
 logger = configure_logging(__file__)
 
